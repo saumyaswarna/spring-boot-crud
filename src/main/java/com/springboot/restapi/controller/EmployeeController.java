@@ -3,6 +3,7 @@ package com.springboot.restapi.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,8 +27,9 @@ public class EmployeeController {
 
 	// 1. get all
 	@GetMapping("/employees")
-	public List<Employee> getAllEmployees() {
-		return employeeRepository.findAll();
+	public ResponseEntity<List<Employee>> getAllEmployees() {
+		return ResponseEntity.ok(employeeRepository.findAll());
+
 	}
 
 	// 2. create employee
@@ -40,8 +42,9 @@ public class EmployeeController {
 	 }
 	 * */
 	@PostMapping("/employees")
-	public Employee createEmployee(@RequestBody Employee employee) {
-		return employeeRepository.save(employee);
+	public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
+		return new ResponseEntity<>(employeeRepository.save(employee), HttpStatus.CREATED);
+		//employeeRepository.save(employee)
 	}
 
 	// 3. get employee by ID
@@ -56,8 +59,8 @@ public class EmployeeController {
 
 	// update employee
 	@PutMapping("/employees/{id}")
-	public ResponseEntity<Employee> UpdateEmployee(@PathVariable(value = "id") long empId,
-			@RequestBody Employee employeeDetails) throws ResourceNotFoundException {
+	public ResponseEntity<Employee> updateEmployee(@PathVariable(value = "id") long empId,
+												   @RequestBody Employee employeeDetails) throws ResourceNotFoundException {
 		Employee employee = employeeRepository.findById(empId)
 				.orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + empId));
 
@@ -72,7 +75,7 @@ public class EmployeeController {
 
 	// delete employee by ID
 	@DeleteMapping("/employees/{id}")
-	public ResponseEntity<Employee> deletEmployeeById(@PathVariable(value = "id") long empId)
+	public ResponseEntity<Employee> deleteEmployeeById(@PathVariable(value = "id") long empId)
 			throws ResourceNotFoundException {
 		employeeRepository.findById(empId)
 				.orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + empId));
